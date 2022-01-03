@@ -1,5 +1,5 @@
 # django
 
 
-django project I've been woriking on.
+django project I've been working on.
 Still on progress
