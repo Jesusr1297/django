@@ -70,7 +70,9 @@ def home(request):
     )
     topics = Topic.objects.all()
     room_count = rooms.count()
-    context = {'rooms': rooms, 'topics': topics, 'room_count': room_count}
+    room_messages = Message.objects.all()
+
+    context = {'rooms': rooms, 'topics': topics, 'room_count': room_count, 'room_messages': room_messages }
     return render(request, 'base/home.html', context)
 
 
@@ -87,6 +89,7 @@ def room(request, pk):
         )
         room.participants.add(request.user)
         return redirect('room', pk=room.id)
+
     context = {
         'room': room,
         'room_messages': room_messages,
@@ -151,49 +154,3 @@ def deleteMessage(request, pk):
         message.delete()
         return redirect('home')
     return render(request, 'base/delete.html', context=context)
-
-
-
-# authenticate
-# <!DOCTYPE html>
-#  <html>
-#
-#  <head>
-#      <meta charset='utf-8'>
-#      <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-#      <title>Cool Rooms</title>
-#      <meta name='viewport' content='width=device-width, initial-scale=1'>
-#  </head>
-#
-#  <body>
-#
-#      <h1>Cools Rooms</h1>
-#
-#      <div id="rooms-container">
-#
-#      </div>
-#
-#  </body>
-#
-#  <script>
-#      let roomsContainer = document.getElementById('rooms-container')
-#
-#      let getRooms = async () => {
-#          let response = await fetch('http://127.0.0.1:8000/api/rooms/')
-#          let rooms = await response.json()
-#
-#          for (let i = 0; rooms.length > i; i++) {
-#              let room = rooms[i]
-#
-#              let row = `<div>
-#                              <h3>${room.name}</h3>
-#                          </div>`
-#
-#              roomsContainer.innerHTML += row
-#          }
-#      }
-#
-#      getRooms()
-#  </script>
-#
-#  </html>
