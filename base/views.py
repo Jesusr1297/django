@@ -11,7 +11,7 @@ from django.contrib.auth.forms import UserCreationForm
 
 
 # Create your views here.
-def loginPage(request):
+def login_page(request):
     page = 'login'
 
     if request.user.is_authenticated:
@@ -38,12 +38,12 @@ def loginPage(request):
     return render(request, 'base/login_register.html', context)
 
 
-def logoutUser(request):
+def logout_user(request):
     logout(request)
     return redirect('home')
 
 
-def registerPage(request):
+def register_page(request):
     form = UserCreationForm()
 
     if request.method == 'POST':
@@ -55,14 +55,14 @@ def registerPage(request):
             login(request, user)
             return redirect('home')
         else:
-            messages.error(request, 'An error ocurred during registration')
+            messages.error(request, 'An error occurred during registration')
 
     context = {'form': form}
     return render(request, 'base/login_register.html', context)
 
 
 def home(request):
-    q = request.GET.get('q') if request.GET.get('q') != None else ''
+    q = request.GET.get('q') if request.GET.get('q') is not None else ''
     rooms = Room.objects.filter(
         Q(topic__name__icontains=q) |
         Q(name__icontains=q) |
@@ -70,9 +70,10 @@ def home(request):
     )
     topics = Topic.objects.all()
     room_count = rooms.count()
-    room_messages = Message.objects.all()
+    room_messages = Message.objects.filter(Q(room__topic__name__contains=q))
 
-    context = {'rooms': rooms, 'topics': topics, 'room_count': room_count, 'room_messages': room_messages }
+    context = {'rooms': rooms, 'topics': topics,
+               'room_count': room_count, 'room_messages': room_messages}
     return render(request, 'base/home.html', context)
 
 
@@ -99,7 +100,7 @@ def room(request, pk):
 
 
 @login_required(login_url='login')
-def createRoom(request):
+def create_room(request):
     form = RoomForm()
     if request.method == 'POST':
         form = RoomForm(request.POST)
@@ -111,7 +112,7 @@ def createRoom(request):
 
 
 @login_required(login_url='login')
-def updateRoom(request, pk):
+def update_room(request, pk):
     room = Room.objects.get(id=pk)
     form = RoomForm(instance=room)
 
@@ -129,7 +130,7 @@ def updateRoom(request, pk):
 
 
 @login_required(login_url='login')
-def deleteRoom(request, pk):
+def delete_room(request, pk):
     room = Room.objects.get(id=pk)
     context = {'obj': room}
 
@@ -143,7 +144,7 @@ def deleteRoom(request, pk):
 
 
 @login_required(login_url='login')
-def deleteMessage(request, pk):
+def delete_message(request, pk):
     message = Message.objects.get(id=pk)
     context = {'obj': message}
 
